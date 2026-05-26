@@ -17,9 +17,16 @@ import org.fossify.commons.helpers.MONTH_SECONDS
 import org.fossify.commons.helpers.ensureBackgroundThread
 import org.fossify.commons.helpers.isRPlus
 import org.fossify.commons.models.FileDirItem
+import br.com.guga.gravadorsuper.dialogs.RenameRecordingDialog
 import br.com.guga.gravadorsuper.dialogs.StoragePermissionDialog
 import br.com.guga.gravadorsuper.models.Recording
 import java.io.File
+
+fun BaseSimpleActivity.showRenameRecordingDialog(recording: Recording, callback: () -> Unit) {
+    RenameRecordingDialog(this, recording) {
+        callback()
+    }
+}
 
 fun Activity.setKeepScreenAwake(keepScreenOn: Boolean) {
     if (keepScreenOn) {
