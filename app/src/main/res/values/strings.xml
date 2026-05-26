@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="empty_string" />
+    <string name="app_launcher_name">Gravador Super</string>
+    <string name="about_content">Gravador Super 2.0\n\nEste é um gravador de voz profissional, limpo e acessível, desenvolvido para o Guga.\n\nRecursos:\n- Gravação em alta fidelidade (WAV/M4A)\n- Controle de velocidade de reprodução\n- Corte e edição de áudio\n- Suporte total ao TalkBack e Tela Dividida\n- Sistema de Lixeira para segurança\n\nDesenvolvido com base no Fossify Voice Recorder.</string>
+    <string name="how_to_content">Como usar o Gravador Super 2.0:\n\n1. Gravar: Pressione o botão circular central para iniciar.\n2. Pausar/Retomar: Durante a gravação, use o botão Pausar.\n3. Parar: Pressione o botão Parar (quadrado) para finalizar.\n4. Velocidade: No Reprodutor, clique no título da gravação para alternar a velocidade (0.5x, 1.0x, 1.5x, 2.0x).\n5. Lixeira: Arquivos apagados vão para a Lixeira. Pressione e segure para selecionar vários. Você pode Restaurar, Apagar permanentemente ou Marcar todos.\n6. Formato: Nas configurações, escolha entre WAV ou M4A.</string>
+    <string name="how_to">Como usar</string>
+    <string name="confirm_recording_folder">Você deve confirmar a pasta onde deseja salvar suas gravações. Pressione "OK" para continuar.</string>
+    <string name="move_recordings">Mover gravações</string>
+    <string name="move_recordings_to_new_folder_desc">Você possui gravações existentes. Deseja movê-as para a nova pasta?</string>
+    <string name="recording_saved_successfully">Gravação salva com sucesso</string>
+    <string name="recording_too_short">A gravação foi curta demais!</string>
+    <string name="recording">Gravando</string>
+    <string name="no_recordings_found">Nenhuma gravação encontrada</string>
+    <string name="no_recordings_in_folder_found">Nenhuma gravação encontrada na pasta selecionada</string>
+    <string name="paused">Pausado</string>
+    <string name="recorder">Gravador</string>
+    <string name="player">Reprodutor</string>
+    <string name="record">Gravar</string>
+    <string name="stop">Parar</string>
+    <string name="pause">Pausar</string>
+    <string name="share">Compartilhar</string>
+    <string name="delete_all">Apagar Tudo</string>
+    <string name="trash">Lixeira</string>
+    <string name="rename">Renomear</string>
+    <string name="delete">Apagar</string>
+    <string name="restore_selected_files">Restaurar</string>
+    <string name="select_all">Marcar todos</string>
+    <string name="open_with">Abrir com</string>
+    <string name="trim">Cortar</string>
+    <string name="trim_start">Início (segundos)</string>
+    <string name="trim_end">Fim (segundos)</string>
+    <string name="trim_error_invalid_times">Tempos inválidos</string>
+    <string name="trimming">Cortando...</string>
+    
+    <!-- Confirmation dialog -->
+    <string name="discard_recording">Descartar gravação</string>
+    <string name="discard_recording_confirmation">Tem certeza que deseja descartar a gravação atual? Isso não pode ser desfeito.</string>
+    <string name="change_microphone_mode_confirmation">Isso altera como o dispositivo processa o áudio. Os resultados variam e podem impactar o volume e ruído.</string>
+    <string name="delete_recordings_confirmation">Apagar %s\?</string>
+    <plurals name="delete_recordings">
+        <item quantity="one">%d gravação</item>
+        <item quantity="other">%d gravações</item>
+    </plurals>
+    
+    <!-- Settings -->
+    <string name="save_recordings_in">Salvar gravações em</string>
+    <string name="filename_pattern">Padrão de nome de arquivo</string>
+    <string name="filename_pattern_must_contain_all">Deve incluir todos os espaços reservados (%Y, %M, %D, %h, %m, %s)</string>
+    <string name="audio_source">Fonte de áudio</string>
+    <string name="microphone_mode">Modo do microfone</string>
+    <string name="bitrate">Taxa de bits</string>
+    <string name="record_after_launch">Iniciar gravação automaticamente ao abrir</string>
+    <string name="keep_screen_on">Manter a tela ligada durante a gravação</string>
+    <string name="sample_rate">Taxa de amostragem</string>
+    
+    <!-- Settings Microphone mode selection -->
+    <string name="microphone_mode_camcorder">Câmera (vídeo)</string>
+    <string name="microphone_mode_voice_communication">Comunicação de voz (ganho auto)</string>
+    <string name="microphone_mode_voice_performance">Performance de voz (baixa latência)</string>
+    <string name="microphone_mode_voice_recognition">Reconhecimento de voz</string>
+    <string name="microphone_mode_unprocessed">Não processado (raw)</string>
+    
+    <!-- FAQ -->
+    <string name="faq_1_title">Posso esconder o ícone de notificação?</string>
+    <string name="faq_1_text">Depende do dispositivo. O app tentará ocultar se a opção estiver marcada, mas o Android pode forçar a exibição em alguns casos.</string>
+    <string name="trim_success">Áudio cortado com sucesso!</string>
+    <string name="speed">Velocidade</string>
+    <string name="playback_speed">Velocidade de reprodução</string>
+    <string name="previous">Anterior</string>
+    <string name="playpause">Reproduzir/Pausar</string>
+    <string name="next">Próximo</string>
+</resources>
