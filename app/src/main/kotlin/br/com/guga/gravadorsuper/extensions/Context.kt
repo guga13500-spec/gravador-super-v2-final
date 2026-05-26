@@ -24,105 +24,42 @@ import org.fossify.commons.extensions.getParentPath
 import org.fossify.commons.extensions.getSAFDocumentId
 import org.fossify.commons.extensions.internalStoragePath
 import org.fossify.commons.extensions.isAudioFast
+import android.os.Handler
+import android.os.Looper
+import org.fossify.commons.helpers.ensureBackgroundThread
 import org.fossify.commons.helpers.isQPlus
 import org.fossify.commons.helpers.isRPlus
+import org.fossify.commons.helpers.isTiramisuPlus
 import br.com.guga.gravadorsuper.R
 import br.com.guga.gravadorsuper.helpers.Config
-import br.com.guga.gravadorsuper.helpers.DEFAULT_RECORDINGS_FOLDER
-import br.com.guga.gravadorsuper.helpers.IS_RECORDING
-import br.com.guga.gravadorsuper.helpers.MyWidgetRecordDisplayProvider
-import br.com.guga.gravadorsuper.helpers.TOGGLE_WIDGET_UI
+import br.com.guga.gravadorsuper.helpers.EXTRA_RECORDING
+import br.com.guga.gravadorsuper.helpers.getAudioMimeType
 import br.com.guga.gravadorsuper.models.Recording
 import java.io.File
-import java.util.Calendar
-import java.util.Locale
-import kotlin.math.roundToLong
+import java.util.*
+import kotlin.collections.ArrayList
 
-val Context.config: Config get() = Config.newInstance(applicationContext)
+val Context.config: Config get() = Config.newInstance(this)
 
-val Context.trashFolder
-    get() = "${config.saveRecordingsFolder}/.trash"
-
-fun Context.drawableToBitmap(drawable: Drawable): Bitmap {
-    val size = (60 * resources.displayMetrics.density).toInt()
-    val mutableBitmap = createBitmap(size, size)
-    val canvas = Canvas(mutableBitmap)
-    drawable.setBounds(0, 0, size, size)
-    drawable.draw(canvas)
-    return mutableBitmap
-}
-
-fun Context.updateWidgets(isRecording: Boolean) {
-    val widgetIDs = AppWidgetManager.getInstance(applicationContext)
-        ?.getAppWidgetIds(
-            ComponentName(
-                applicationContext,
-                MyWidgetRecordDisplayProvider::class.java
-            )
-        ) ?: return
-
-    if (widgetIDs.isNotEmpty()) {
-        Intent(applicationContext, MyWidgetRecordDisplayProvider::class.java).apply {
-            action = TOGGLE_WIDGET_UI
-            putExtra(IS_RECORDING, isRecording)
-            sendBroadcast(this)
-        }
-    }
-}
-
-fun Context.getOrCreateTrashFolder(): String {
-    val folder = File(trashFolder)
-    if (!folder.exists()) {
-        folder.mkdir()
-    }
-    return trashFolder
-}
-
-fun Context.getDefaultRecordingsFolder(): String {
-    val defaultPath = getDefaultRecordingsRelativePath()
-    return "$internalStoragePath/$defaultPath"
-}
-
-fun Context.getDefaultRecordingsRelativePath(): String {
-    return if (isQPlus()) {
-        "${Environment.DIRECTORY_MUSIC}/$DEFAULT_RECORDINGS_FOLDER"
-    } else {
-        getString(R.string.app_name)
-    }
-}
-
-fun Context.hasRecordings(): Boolean {
-    val recordingsFolder = config.saveRecordingsFolder
-    return if (isRPlus()) {
-        getDocumentSdk30(recordingsFolder)
-            ?.listFiles()
-            ?.any { it.isAudioRecording() }
-            ?: false
-    } else {
-        File(recordingsFolder)
-            .listFiles()
-            ?.any { it.isAudioFast() }
-            ?: false
-    }
-}
+val Context.trashFolder: String get() = "${config.saveRecordingsFolder}/.trash"
 
 fun Context.getAllRecordings(trashed: Boolean = false): ArrayList<Recording> {
     return if (isRPlus()) {
         val recordings = arrayListOf<Recording>()
-        recordings.addAll(getRecordings(trashed))
+        recordings.addAll(getRecordingsInternal(trashed))
         if (trashed) {
             // Return recordings trashed using MediaStore, this won't be needed in the future
             @Suppress("DEPRECATION")
-            recordings.addAll(getMediaStoreTrashedRecordings())
+            recordings.addAll(getMediaStoreTrashedRecordingsInternal())
         }
 
         recordings
     } else {
-        getLegacyRecordings(trashed)
+        getLegacyRecordingsInternal(trashed)
     }
 }
 
-private fun Context.getRecordings(trashed: Boolean = false): ArrayList<Recording> {
+private fun Context.getRecordingsInternal(trashed: Boolean = false): ArrayList<Recording> {
     val recordings = ArrayList<Recording>()
     val folder = if (trashed) trashFolder else config.saveRecordingsFolder
     val files = getDocumentSdk30(folder)?.listFiles() ?: return recordings
@@ -138,10 +75,10 @@ private fun Context.getRecordings(trashed: Boolean = false): ArrayList<Recording
 }
 
 @Deprecated(
-    message = "Use getRecordings instead. This method is only here for backward compatibility.",
-    replaceWith = ReplaceWith("getRecordings(trashed = true)")
+    message = "Use getRecordingsInternal instead. This method is only here for backward compatibility.",
+    replaceWith = ReplaceWith("getRecordingsInternal(trashed = true)")
 )
-private fun Context.getMediaStoreTrashedRecordings(): ArrayList<Recording> {
+private fun Context.getMediaStoreTrashedRecordingsInternal(): ArrayList<Recording> {
     val recordings = ArrayList<Recording>()
     val folder = config.saveRecordingsFolder
     val documentFiles = getDocumentSdk30(folder)?.listFiles() ?: return recordings
@@ -159,7 +96,7 @@ private fun Context.getMediaStoreTrashedRecordings(): ArrayList<Recording> {
     return recordings
 }
 
-private fun Context.getLegacyRecordings(trashed: Boolean = false): ArrayList<Recording> {
+private fun Context.getLegacyRecordingsInternal(trashed: Boolean = false): ArrayList<Recording> {
     val recordings = ArrayList<Recording>()
     val folder = if (trashed) {
         trashFolder
@@ -189,53 +126,34 @@ private fun Context.getLegacyRecordings(trashed: Boolean = false): ArrayList<Rec
     return recordings
 }
 
+private fun DocumentFile.isAudioRecording(): Boolean {
+    val name = name?.lowercase(Locale.ROOT) ?: return false
+    return name.endsWith(".wav") || name.endsWith(".m4a")
+}
+
+private fun DocumentFile.isTrashedMediaStoreRecording(): Boolean {
+    return name?.startsWith(".trashed") ?: false
+}
+
 private fun Context.readRecordingFromFile(file: DocumentFile): Recording {
-    val id = file.hashCode()
-    val title = file.name!!
+    val id = file.uri.hashCode()
+    val title = file.name ?: ""
     val path = file.uri.toString()
     val timestamp = file.lastModified()
-    val duration = getDurationFromUri(file.uri)
+    val duration = getDuration(file.uri) ?: 0
     val size = file.length().toInt()
-    return Recording(
-        id = id,
-        title = title,
-        path = path,
-        timestamp = timestamp,
-        duration = duration.toInt(),
-        size = size
-    )
+    return Recording(id, title, path, timestamp, duration, size)
 }
 
-private fun Context.getDurationFromUri(uri: Uri): Long {
+fun Context.getDuration(uri: Uri): Int? {
+    val retriever = MediaMetadataRetriever()
     return try {
-        val retriever = MediaMetadataRetriever()
         retriever.setDataSource(this, uri)
-        val time = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!
-        (time.toLong() / 1000.toDouble()).roundToLong()
+        retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)?.toInt()?.div(1000)
     } catch (e: Exception) {
-        0L
-    }
-}
-
-// Based on common's `Context.createSAFFileSdk30` extension
-fun Context.createDocumentFile(path: String): Uri? {
-    return try {
-        val treeUri = createFirstParentTreeUri(path)
-        val parentPath = path.getParentPath()
-        if (!getDoesFilePathExistSdk30(parentPath)) {
-            createSAFDirectorySdk30(parentPath)
-        }
-
-        val documentId = getSAFDocumentId(parentPath)
-        val parentUri = DocumentsContract.buildDocumentUriUsingTree(treeUri, documentId)
-        DocumentsContract.createDocument(
-            contentResolver,
-            parentUri,
-            path.getMimeType(),
-            path.getFilenameFromPath()
-        )
-    } catch (@Suppress("SwallowedException") e: IllegalStateException) {
         null
+    } finally {
+        retriever.release()
     }
 }
 
@@ -258,4 +176,13 @@ fun Context.getFormattedFilename(): String {
         .replace("%h", hour, false)
         .replace("%m", minute, false)
         .replace("%s", second, false)
+}
+
+fun Context.getRecordings(callback: (ArrayList<Recording>) -> Unit) {
+    ensureBackgroundThread {
+        val recordings = getAllRecordings().apply { sortByDescending { it.timestamp } }
+        Handler(Looper.getMainLooper()).post {
+            callback(recordings)
+        }
+    }
 }
