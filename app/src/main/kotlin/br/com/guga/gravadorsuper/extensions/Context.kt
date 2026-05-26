@@ -69,12 +69,13 @@ fun Context.drawableToBitmap(drawable: Drawable): Bitmap {
     return bitmap
 }
 
-fun Context.updateWidgets() {
+fun Context.updateWidgets(isRecording: Boolean = false) {
     val widgetManager = AppWidgetManager.getInstance(this)
     val componentName = ComponentName(this, "br.com.guga.gravadorsuper.helpers.MyWidgetRecordDisplayProvider")
     val widgetIds = widgetManager.getAppWidgetIds(componentName)
     val intent = Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
     intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)
+    intent.putExtra("is_recording", isRecording)
     sendBroadcast(intent)
 }
 
