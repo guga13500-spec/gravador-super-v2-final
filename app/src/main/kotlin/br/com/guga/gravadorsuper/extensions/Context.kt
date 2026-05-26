@@ -50,8 +50,8 @@ fun Context.getOrCreateTrashFolder(): String {
 }
 
 fun Context.createDocumentFile(path: String): Uri? {
-    val parentPath = getParentPath(path)
-    val filename = getFilenameFromPath(path)
+    val parentPath = path.getParentPath()
+    val filename = path.getFilenameFromPath()
     val parentUri = createFirstParentTreeUri(parentPath)
     return DocumentsContract.createDocument(contentResolver, parentUri, getAudioMimeType(config.extension), filename)
 }
