@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_launcher_name">Enregistreur vocal</string>
+    <string name="recording_saved_successfully">Sauvegarde de l\'enregistrement réussie</string>
+    <string name="recording">Enregistrement</string>
+    <string name="no_recordings_found">Aucun enregistrement créé par cette application
+\nn’a été trouvé</string>
+    <string name="no_recordings_in_folder_found">Aucun enregistrement n’a été trouvé
+\ndans le dossier sélectionné</string>
+    <string name="paused">En pause</string>
+    <string name="recorder">Enregistreur</string>
+    <string name="player">Lecteur</string>
+    <string name="delete_recordings_confirmation">Supprimer %s \?</string>
+    <plurals name="delete_recordings">
+        <item quantity="one">%d enregistrement</item>
+        <item quantity="many">%d enregistrements</item>
+        <item quantity="other">%d enregistrements</item>
+    </plurals>
+    <string name="save_recordings_in">Sauvegarder les enregistrements dans</string>
+    <string name="audio_source">Source audio</string>
+    <string name="bitrate">Débit binaire</string>
+    <string name="record_after_launch">Démarrer l’enregistrement automatiquement après le lancement de l’application</string>
+    <string name="microphone_mode_camcorder">Objectif vidéo</string>
+    <string name="microphone_mode_unprocessed">Non traitée</string>
+    <string name="microphone_mode_voice_recognition">Reconnaissance vocale</string>
+    <string name="microphone_mode_voice_communication">Communication vocale</string>
+    <string name="microphone_mode_voice_performance">Performance vocale</string>
+    <string name="faq_1_title">Puis-je masquer l’icône de notification pendant l’enregistrement \?</string>
+    <string name="faq_1_text">Et bien, ça dépend. Pendant que vous utilisez votre appareil, il n’est plus possible de masquer complètement les notifications d’applications comme celle-ci. Si vous cochez l’élément de réglage approprié, l’application fera de son mieux pour les masquer. Vous pouvez cependant la masquer sur l’écran de verrouillage, si vous désactivez l’affichage des notifications sensibles dans les paramètres de votre appareil.</string>
+    <string name="move_recordings">Déplacer les enregistrements</string>
+    <string name="move_recordings_to_new_folder_desc">Vous avez des enregistrements existants. Voulez-vous les déplacer dans votre nouveau dossier ?</string>
+    <string name="confirm_recording_folder">Vous devez confirmer le dossier dans lequel vous souhaitez sauvegarder vos enregistrements. Appuyez sur OK pour continuer.</string>
+    <string name="keep_screen_on">Garder l\'écran allumé pendant les enregistrements</string>
+    <string name="recording_too_short">L\'enregistrement est trop court !</string>
+    <string name="discard_recording">Annuler l\'enregistrement</string>
+    <string name="discard_recording_confirmation">Êtes-vous sûr(e) de vouloir annuler l\'enregistrement en cours ? Cette action est irrémédiable.</string>
+    <string name="sample_rate">Fréquence d\'échantillonnage</string>
+    <string name="change_microphone_mode_confirmation">Ceci change la façon dont votre appareil achemine et traite le son. Les résultats peuvent varier selon l\'appareil et peut impacter le volume, le bruit ainsi que d\'autres facteurs.</string>
+    <string name="microphone_mode">Mode microphone</string>
+    <string name="filename_pattern_must_contain_all">Doit inclure tous les espaces réservés pour les noms de fichiers uniques (%Y, %M, %D, %h, %m, %s)</string>
+    <string name="filename_pattern">Modèle de nom de fichier</string>
+</resources>
