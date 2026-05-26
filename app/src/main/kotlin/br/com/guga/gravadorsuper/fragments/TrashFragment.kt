@@ -14,6 +14,9 @@ import br.com.guga.gravadorsuper.extensions.config
 import br.com.guga.gravadorsuper.interfaces.RefreshRecordingsListener
 import br.com.guga.gravadorsuper.models.Events
 import br.com.guga.gravadorsuper.models.Recording
+import br.com.guga.gravadorsuper.extensions.*
+import org.fossify.commons.dialogs.ConfirmationDialog
+import org.fossify.commons.helpers.ensureBackgroundThread
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
