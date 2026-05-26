@@ -31,9 +31,7 @@ import org.fossify.commons.helpers.isQPlus
 import org.fossify.commons.helpers.isRPlus
 import org.fossify.commons.helpers.isTiramisuPlus
 import br.com.guga.gravadorsuper.R
-import br.com.guga.gravadorsuper.helpers.Config
-import br.com.guga.gravadorsuper.helpers.EXTRA_RECORDING
-import br.com.guga.gravadorsuper.helpers.getAudioMimeType
+import br.com.guga.gravadorsuper.helpers.*
 import br.com.guga.gravadorsuper.models.Recording
 import java.io.File
 import java.util.*
@@ -42,6 +40,43 @@ import kotlin.collections.ArrayList
 val Context.config: Config get() = Config.newInstance(this)
 
 val Context.trashFolder: String get() = "${config.saveRecordingsFolder}/.trash"
+
+fun Context.getOrCreateTrashFolder(): String {
+    val folder = trashFolder
+    if (!getDoesFilePathExistSdk30(folder)) {
+        createSAFDirectorySdk30(folder)
+    }
+    return folder
+}
+
+fun Context.createDocumentFile(path: String): Uri? {
+    val parentPath = getParentPath(path)
+    val filename = getFilenameFromPath(path)
+    val parentUri = createFirstParentTreeUri(parentPath)
+    return DocumentsContract.createDocument(contentResolver, parentUri, getAudioMimeType(config.extension), filename)
+}
+
+fun Context.hasRecordings(): Boolean {
+    val folder = config.saveRecordingsFolder
+    return getDocumentSdk30(folder)?.listFiles()?.any { it.isAudioRecording() } ?: false
+}
+
+fun Context.drawableToBitmap(drawable: Drawable): Bitmap {
+    val bitmap = createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    drawable.setBounds(0, 0, canvas.width, canvas.height)
+    drawable.draw(canvas)
+    return bitmap
+}
+
+fun Context.updateWidgets() {
+    val widgetManager = AppWidgetManager.getInstance(this)
+    val componentName = ComponentName(this, "br.com.guga.gravadorsuper.helpers.MyWidgetRecordDisplayProvider")
+    val widgetIds = widgetManager.getAppWidgetIds(componentName)
+    val intent = Intent(AppWidgetManager.ACTION_APPWIDGET_UPDATE)
+    intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, widgetIds)
+    sendBroadcast(intent)
+}
 
 fun Context.getAllRecordings(trashed: Boolean = false): ArrayList<Recording> {
     return if (isRPlus()) {
