@@ -220,7 +220,7 @@ class PlayerFragment(
             val currID = adapter.currRecordingId
             (context as SimpleActivity).getRecordings { recordings ->
                 adapter.updateItems(recordings)
-                if (currID != 0L) {
+                if (currID != 0) {
                     val updatedRecording = recordings.firstOrNull { it.id == currID }
                     if (updatedRecording != null) {
                         binding.playerTitle.text = updatedRecording.title
