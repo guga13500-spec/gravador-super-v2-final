@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="AlwaysShowAction">
+    <item
+        android:id="@+id/delete_all"
+        android:title="@string/delete_all"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/settings"
+        android:icon="@drawable/ic_settings_cog_vector"
+        android:title="@string/settings"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/how_to"
+        android:title="@string/how_to"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/about"
+        android:icon="@drawable/ic_info_vector"
+        android:title="@string/about"
+        app:showAsAction="never" />
+</menu>
