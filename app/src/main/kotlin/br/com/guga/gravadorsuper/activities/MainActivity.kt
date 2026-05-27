@@ -3,6 +3,9 @@ package br.com.guga.gravadorsuper.activities
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import br.com.guga.gravadorsuper.models.Events
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import android.provider.MediaStore
 import android.widget.ImageView
 import android.widget.TextView
@@ -63,6 +66,7 @@ class MainActivity : SimpleActivity() {
         handlePermission(PERMISSION_RECORD_AUDIO) {
             if (it) {
                 tryInitVoiceRecorder()
+        handleIntent(intent)
             } else {
                 toast(org.fossify.commons.R.string.no_audio_permissions)
                 finish()
@@ -159,7 +163,8 @@ class MainActivity : SimpleActivity() {
         binding.mainMenu.updateColors()
     }
 
-    private fun tryInitVoiceRecorder() {
+    private fun tryInitVoiceRecorder()
+        handleIntent(intent) {
         if (isRPlus()) {
             ensureStoragePermission { granted ->
                 if (granted) {
@@ -299,4 +304,20 @@ class MainActivity : SimpleActivity() {
             finish()
         }
     }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleIntent(intent)
+    }
+
+    private fun handleIntent(intent: Intent?) {
+        if (intent?.action == Intent.ACTION_VIEW && intent.type?.startsWith("audio/") == True) {
+            val uri = intent.data
+            if (uri != null) {
+                bus?.post(Events.PlayExternalAudio(uri))
+            }
+        }
+    }
+
 }
