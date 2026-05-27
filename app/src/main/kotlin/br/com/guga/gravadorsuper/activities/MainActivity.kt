@@ -28,115 +28,56 @@ import br.com.guga.gravadorsuper.R
 import br.com.guga.gravadorsuper.adapters.ViewPagerAdapter
 import br.com.guga.gravadorsuper.databinding.ActivityMainBinding
 import br.com.guga.gravadorsuper.extensions.config
-import br.com.guga.gravadorsuper.extensions.deleteExpiredTrashedRecordings
 import br.com.guga.gravadorsuper.extensions.ensureStoragePermission
-import br.com.guga.gravadorsuper.helpers.STOP_AMPLITUDE_UPDATE
-import br.com.guga.gravadorsuper.models.Events
-import br.com.guga.gravadorsuper.services.RecorderService
+import br.com.guga.gravadorsuper.extensions.handlePermission
+import br.com.guga.gravadorsuper.helpers.RECORDER_RUNNING_NOTIF_ID
 import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 
 class MainActivity : SimpleActivity() {
-
+    private lateinit var binding: ActivityMainBinding
     private var bus: EventBus? = null
 
-    override var isSearchBarEnabled = true
-
-    private lateinit var binding: ActivityMainBinding
-
     override fun onCreate(savedInstanceState: Bundle?) {
+        isMaterialActivity = true
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        appLaunched(BuildConfig.APPLICATION_ID)
         setupOptionsMenu()
         refreshMenuItems()
 
-        setupEdgeToEdge(padBottomImeAndSystem = listOf(binding.mainTabsHolder))
-
-        if (checkAppSideloading()) {
-            return
-        }
-
-        if (savedInstanceState == null) {
-            deleteExpiredTrashedRecordings()
-        }
+        bus = EventBus.getDefault()
+        bus?.register(this)
 
         handlePermission(PERMISSION_RECORD_AUDIO) {
             if (it) {
                 tryInitVoiceRecorder()
-        handleIntent(intent)
             } else {
                 toast(org.fossify.commons.R.string.no_audio_permissions)
                 finish()
             }
         }
 
-        bus = EventBus.getDefault()
-        bus!!.register(this)
-        if (config.recordAfterLaunch && !RecorderService.isRunning) {
-            Intent(this@MainActivity, RecorderService::class.java).apply {
-                try {
-                    startService(this)
-                } catch (ignored: Exception) {
-                }
-            }
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        updateMenuColors()
-        if (getPagerAdapter()?.showRecycleBin != config.useRecycleBin) {
-            setupViewPager()
-        }
-        setupTabColors()
-        getPagerAdapter()?.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        config.lastUsedViewPagerPage = binding.viewPager.currentItem
+        checkAppSideloading()
+        appLaunched(BuildConfig.APPLICATION_ID)
+        updateBottomTabItemColors(binding.mainTabsHolder, binding.mainTabsHolder.getBottomNavigationBackgroundColor())
+        
+        handleIntent(intent)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         bus?.unregister(this)
-        getPagerAdapter()?.onDestroy()
-
-        Intent(this@MainActivity, RecorderService::class.java).apply {
-            action = STOP_AMPLITUDE_UPDATE
-            try {
-                startService(this)
-            } catch (ignored: Exception) {
-            }
-        }
     }
 
-    override fun onBackPressedCompat(): Boolean {
-        return if (binding.mainMenu.isSearchOpen) {
-            binding.mainMenu.closeSearch()
-            true
-        } else if (isThirdPartyIntent()) {
-            setResult(Activity.RESULT_CANCELED, null)
-            false
-        } else {
-            false
-        }
-    }
-
-    private fun refreshMenuItems() {
-        binding.mainMenu.requireToolbar().menu.apply {
-            findItem(R.id.delete_all).isVisible = binding.viewPager.currentItem != 0
-        }
+    override fun onResume() {
+        super.onResume()
+        updateMenuColors()
     }
 
     private fun setupOptionsMenu() {
-        binding.mainMenu.requireToolbar().inflateMenu(R.menu.menu)
+        binding.mainMenu.getToolbar().inflateMenu(R.menu.menu_main)
         binding.mainMenu.toggleHideOnScroll(false)
-        binding.mainMenu.setupMenu()
-
+        binding.mainMenu.setupWithViewPager(binding.viewPager)
         binding.mainMenu.onSearchOpenListener = {
             if (binding.viewPager.currentItem == 0) {
                 binding.viewPager.currentItem = 1
@@ -163,8 +104,7 @@ class MainActivity : SimpleActivity() {
         binding.mainMenu.updateColors()
     }
 
-    private fun tryInitVoiceRecorder()
-        handleIntent(intent) {
+    private fun tryInitVoiceRecorder() {
         if (isRPlus()) {
             ensureStoragePermission { granted ->
                 if (granted) {
@@ -209,62 +149,38 @@ class MainActivity : SimpleActivity() {
                                 drawableId
                             )
                         )
-
-                    customView
-                        ?.findViewById<TextView>(org.fossify.commons.R.id.tab_item_label)
-                        ?.setText(tabLabels[i])
-
-                    AutofitHelper.create(
-                        customView?.findViewById(org.fossify.commons.R.id.tab_item_label)
-                    )
-
+                    customView?.findViewById<TextView>(org.fossify.commons.R.id.tab_item_label)?.setText(tabLabels[i])
                     binding.mainTabsHolder.addTab(this)
                 }
         }
 
+        val adapter = ViewPagerAdapter(this, config.useRecycleBin)
+        binding.viewPager.adapter = adapter
+        binding.viewPager.offscreenPageLimit = 2
+        binding.viewPager.addOnPageChangeListener(onPageChangeListener { position ->
+            binding.mainTabsHolder.getTabAt(position)?.select()
+        })
+
         binding.mainTabsHolder.onTabSelectionChanged(
-            tabUnselectedAction = {
-                updateBottomTabItemColors(it.customView, false)
-                if (it.position == 1 || it.position == 2) {
-                    binding.mainMenu.closeSearch()
-                }
-            },
-            tabSelectedAction = {
-                binding.viewPager.currentItem = it.position
-                updateBottomTabItemColors(it.customView, true)
-                refreshMenuItems()
+            onTabSelected = { tab ->
+                binding.viewPager.currentItem = tab.position
+                updateBottomTabItemColors(binding.mainTabsHolder, binding.mainTabsHolder.getBottomNavigationBackgroundColor(), tab.position)
             }
         )
 
-        binding.viewPager.adapter = ViewPagerAdapter(this, config.useRecycleBin)
-        binding.viewPager.offscreenPageLimit = 2
-        binding.viewPager.onPageChangeListener {
-            binding.mainTabsHolder.getTabAt(it)?.select()
-            (binding.viewPager.adapter as ViewPagerAdapter).finishActMode()
-            refreshMenuItems()
-        }
+        binding.mainTabsHolder.getTabAt(0)?.select()
+        updateBottomTabItemColors(binding.mainTabsHolder, binding.mainTabsHolder.getBottomNavigationBackgroundColor(), 0)
 
         if (isThirdPartyIntent()) {
-            binding.viewPager.currentItem = 0
-        } else {
-            binding.viewPager.currentItem = config.lastUsedViewPagerPage
-            binding.mainTabsHolder.getTabAt(config.lastUsedViewPagerPage)?.select()
+            binding.mainTabsHolder.beGone()
+            binding.viewPager.isUserInputEnabled = false
         }
     }
 
-    private fun setupTabColors() {
-        val activeView = binding.mainTabsHolder.getTabAt(binding.viewPager.currentItem)?.customView
-        updateBottomTabItemColors(activeView, true)
-        for (i in 0 until binding.mainTabsHolder.tabCount) {
-            if (i != binding.viewPager.currentItem) {
-                val inactiveView = binding.mainTabsHolder.getTabAt(i)?.customView
-                updateBottomTabItemColors(inactiveView, false)
-            }
+    private fun refreshMenuItems() {
+        binding.mainMenu.getToolbar().menu.apply {
+            findItem(R.id.delete_all).isVisible = binding.viewPager.currentItem == 2
         }
-
-        binding.mainTabsHolder.getTabAt(binding.viewPager.currentItem)?.select()
-        val bottomBarColor = getBottomNavigationBackgroundColor()
-        binding.mainTabsHolder.setBackgroundColor(bottomBarColor)
     }
 
     private fun getPagerAdapter() = (binding.viewPager.adapter as? ViewPagerAdapter)
@@ -312,12 +228,11 @@ class MainActivity : SimpleActivity() {
     }
 
     private fun handleIntent(intent: Intent?) {
-        if (intent?.action == Intent.ACTION_VIEW && intent.type?.startsWith("audio/") == True) {
+        if (intent?.action == Intent.ACTION_VIEW && intent.type?.startsWith("audio/") == true) {
             val uri = intent.data
             if (uri != null) {
                 bus?.post(Events.PlayExternalAudio(uri))
             }
         }
     }
-
 }
