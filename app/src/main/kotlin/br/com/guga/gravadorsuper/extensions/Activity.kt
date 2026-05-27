@@ -217,3 +217,17 @@ fun BaseSimpleActivity.deleteExpiredTrashedRecordings() {
         }
     }
 }
+
+fun BaseSimpleActivity.handlePermission(permissionId: Int, callback: (granted: Boolean) -> Unit) {
+    handlePermission(permissionId) { granted ->
+        callback(granted)
+    }
+}
+
+fun android.view.View.beGone() {
+    visibility = android.view.View.GONE
+}
+
+fun android.view.View.beVisible() {
+    visibility = android.view.View.VISIBLE
+}
