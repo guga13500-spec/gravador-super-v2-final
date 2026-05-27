@@ -109,7 +109,7 @@ const val WAS_MIC_MODE_WARNING_SHOWN = "was_mic_mode_warning_shown"
 const val FILENAME_PATTERN = "filename_pattern"
 const val ASK_FOR_TITLE = "ask_for_title"
 
-const val DEFAULT_RECORDINGS_FOLDER = "Recordings"
+const val DEFAULT_RECORDINGS_FOLDER = "/storage/emulated/0/Download/GravadorSuper"
 const val DEFAULT_FILENAME_PATTERN = "%Y%M%D_%h%m%s"
 
 const val EXTRA_RECORDING = "recording"
