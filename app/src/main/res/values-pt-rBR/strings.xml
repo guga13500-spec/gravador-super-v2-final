@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">Gravador Super</string>
     <string name="app_launcher_name">Gravador Super</string>
-    <string name="about_content">Gravador Super 2.0\n\nEste é um gravador de voz profissional, limpo e acessível, desenvolvido para o Guga.\n\nRecursos:\n- Gravação em alta fidelidade (WAV/M4A)\n- Controle de velocidade de reprodução\n- Corte e edição de áudio\n- Suporte total ao TalkBack e Tela Dividida\n- Sistema de Lixeira para segurança\n\nDesenvolvido com base no Fossify Voice Recorder.</string>
+    <string name="about_content">Gravador Super 2.0\n\nGravador de voz profissional, limpo e acessível.\n\nCriado por Gustavo Oliveira.\n\nRecursos:\n- Gravação em alta fidelidade (WAV/M4A)\n- Controle de velocidade de reprodução\n- Corte e edição de áudio\n- Suporte total ao TalkBack e Tela Dividida\n- Sistema de Lixeira para segurança\n\nDesenvolvido com base no Fossify Voice Recorder.</string>
     <string name="how_to_content">Como usar o Gravador Super 2.0:\n\n1. Gravar: Pressione o botão circular central para iniciar.\n2. Pausar/Retomar: Durante a gravação, use o botão Pausar.\n3. Parar: Pressione o botão Parar (quadrado) para finalizar.\n4. Velocidade: No Reprodutor, clique no título da gravação para alternar a velocidade (0.5x, 1.0x, 1.5x, 2.0x).\n5. Lixeira: Arquivos apagados vão para a Lixeira. Pressione e segure para selecionar vários. Você pode Restaurar, Apagar permanentemente ou Marcar todos.\n6. Formato: Nas configurações, escolha entre WAV ou M4A.</string>
     <string name="how_to">Como usar</string>
     <string name="confirm_recording_folder">Você deve confirmar a pasta onde deseja salvar suas gravações. Pressione "OK" para continuar.</string>
