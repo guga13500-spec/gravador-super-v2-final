@@ -32,6 +32,8 @@ import org.fossify.commons.helpers.isQPlus
 import org.fossify.commons.helpers.isTiramisuPlus
 import br.com.guga.gravadorsuper.R
 import br.com.guga.gravadorsuper.activities.SimpleActivity
+import br.com.guga.gravadorsuper.activities.MainActivity
+import androidx.viewpager.widget.ViewPager
 import br.com.guga.gravadorsuper.adapters.RecordingsAdapter
 import br.com.guga.gravadorsuper.databinding.FragmentPlayerBinding
 import br.com.guga.gravadorsuper.extensions.config
@@ -523,5 +525,15 @@ class PlayerFragment(
             context.unregisterReceiver(becomingNoisyReceiver)
         } catch (ignored: IllegalArgumentException) {
         }
+    }
+
+    @Suppress("unused")
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun playExternalAudio(event: Events.PlayExternalAudio) {
+        val uri = event.uri
+        val title = uri.lastPathSegment ?: "Audio"
+        val recording = Recording(id = -1, title = title, path = uri.toString(), timestamp = System.currentTimeMillis(), duration = 0, size = 0)
+        (context as? MainActivity)?.let { mainActivity -> mainActivity.findViewById<androidx.viewpager.widget.ViewPager>(R.id.view_pager)?.currentItem = 1 }
+        playRecording(recording, true)
     }
 }
