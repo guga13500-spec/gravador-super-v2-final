@@ -29,7 +29,6 @@ import br.com.guga.gravadorsuper.adapters.ViewPagerAdapter
 import br.com.guga.gravadorsuper.databinding.ActivityMainBinding
 import br.com.guga.gravadorsuper.extensions.config
 import br.com.guga.gravadorsuper.extensions.ensureStoragePermission
-import br.com.guga.gravadorsuper.extensions.handlePermission
 import br.com.guga.gravadorsuper.helpers.RECORDER_RUNNING_NOTIF_ID
 import org.greenrobot.eventbus.EventBus
 
@@ -75,7 +74,7 @@ class MainActivity : SimpleActivity() {
     }
 
     private fun setupOptionsMenu() {
-        binding.mainMenu.getToolbar().inflateMenu(R.menu.menu_main)
+        binding.mainMenu.requireToolbar().inflateMenu(R.menu.menu)
         binding.mainMenu.toggleHideOnScroll(false)
         binding.mainMenu.setupWithViewPager(binding.viewPager)
         binding.mainMenu.onSearchOpenListener = {
@@ -178,7 +177,7 @@ class MainActivity : SimpleActivity() {
     }
 
     private fun refreshMenuItems() {
-        binding.mainMenu.getToolbar().menu.apply {
+        binding.mainMenu.requireToolbar().menu.apply {
             findItem(R.id.delete_all).isVisible = binding.viewPager.currentItem == 2
         }
     }
