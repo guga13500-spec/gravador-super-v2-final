@@ -127,13 +127,13 @@ fun BaseSimpleActivity.moveRecordings(
         moveRecordingsLegacy(
             recordings = recordingsToMove,
             sourceParent = sourceParent,
-            destinationParent = destinationParent,
+        destinationParent = destinationParent,
             callback = callback
         )
     }
 }
 
-private fun BaseSimpleActivity.moveRecordingsSAF(
+Private fun BaseSimpleActivity.moveRecordingsSAF(
     recordings: Collection<Recording>,
     sourceParent: String,
     destinationParent: String,
@@ -224,4 +224,12 @@ fun android.view.View.beGone() {
 
 fun android.view.View.beVisible() {
     visibility = android.view.View.VISIBLE
+}
+
+fun BaseSimpleActivity.handleSAFDialog(path: String, callback: (result: Boolean) -> Unit) {
+    callback(true)
+}
+
+fun BaseSimpleActivity.handleSAFDialogSdk30(path: String, showRationale: Boolean, callback: (result: Boolean) -> Unit) {
+    callback(true)
 }
